@@ -4,6 +4,21 @@ ElectionIQ is a production-grade, AI-powered web application designed to help In
 
 ---
 
+## 🔐 Demo Access (For Judges & Evaluators)
+
+**Live URL**: https://electioniq-124846023341.europe-west1.run.app
+
+You can sign in using **either** method:
+
+| Method | Details |
+|---|---|
+| **Google Sign-in** | Click "Continue with Google" and use any Google account |
+| **Email & Password** | Use any email (e.g. `judge@example.com`) and any password (e.g. `demo1234`) |
+
+> The Email/Password login accepts **any** credentials for demonstration purposes — no registration needed.
+
+---
+
 ## 🎯 Chosen Vertical
 
 **Civic Education & Voter Awareness — Indian Elections**
