@@ -161,18 +161,20 @@ export default function Home() {
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-indigo-400/20 blur-3xl -z-10 animate-pulse delay-1000"></div>
 
       <main className="container mx-auto px-4 py-12 max-w-5xl">
-        {/* Header */}
-        <header className="text-center mb-16 animate-in fade-in slide-in-from-top-4 duration-700">
-          <div className="inline-flex items-center justify-center p-4 bg-white rounded-full shadow-md mb-6 border border-gray-100">
-            <Vote className="w-12 h-12 text-indigo-600" />
-          </div>
-          <h1 className="text-5xl md:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-indigo-700 tracking-tight mb-4">
-            ElectionIQ
-          </h1>
-          <p className="text-xl text-gray-600 font-medium max-w-2xl mx-auto flex items-center justify-center gap-2">
-            Your Smart Election Learning Assistant <ShieldCheck className="w-5 h-5 text-green-500" />
-          </p>
-        </header>
+        {/* Header - Only show for guests or when no results */}
+        {(!session || !result) && (
+          <header className="text-center mb-16 animate-in fade-in slide-in-from-top-4 duration-700">
+            <div className="inline-flex items-center justify-center p-4 bg-white rounded-full shadow-md mb-6 border border-gray-100">
+              <Vote className="w-12 h-12 text-indigo-600" />
+            </div>
+            <h1 className="text-5xl md:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-indigo-700 tracking-tight mb-4">
+              ElectionIQ
+            </h1>
+            <p className="text-xl text-gray-600 font-medium max-w-2xl mx-auto flex items-center justify-center gap-2">
+              Your Smart Election Learning Assistant <ShieldCheck className="w-5 h-5 text-green-500" />
+            </p>
+          </header>
+        )}
 
         {/* ── NOT LOGGED IN → Show form + Login/Register CTA ── */}
         {!session && (
