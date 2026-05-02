@@ -7,6 +7,7 @@ import { UserContext } from '@/utils/eligibility';
 import { AssistantResponse } from '@/ai/vertex';
 import { ShieldCheck, Vote, RefreshCw, LogIn, Mail, Lock, Loader2 } from 'lucide-react';
 import { useSession, signIn } from 'next-auth/react';
+import Link from 'next/link';
 import { db } from '@/utils/firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 
