@@ -59,40 +59,38 @@ export default function Header() {
             )}
           </nav>
 
-          {/* Auth buttons — hidden on homepage */}
-          {!isHomePage && (
-            <div className="flex items-center gap-3">
-              {session ? (
-                <div className="flex items-center gap-3">
-                  <div className="hidden sm:flex items-center gap-2 bg-indigo-50 text-indigo-700 px-3 py-1.5 rounded-full text-sm font-semibold">
-                    <User className="w-4 h-4" />
-                    {session.user?.name}
-                  </div>
-                  <Link href="/dashboard" className="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold px-4 py-2 rounded-xl transition-all shadow-sm flex items-center gap-1.5">
-                    <LayoutDashboard className="w-4 h-4" /> Dashboard
-                  </Link>
-                  <button onClick={() => signOut()} className="text-red-400 hover:text-red-600 text-sm font-semibold flex items-center gap-1 transition-colors">
-                    <LogOut className="w-4 h-4" />
-                  </button>
+          {/* Auth buttons */}
+          <div className="flex items-center gap-3">
+            {session ? (
+              <div className="flex items-center gap-3">
+                <div className="hidden sm:flex items-center gap-2 bg-indigo-50 text-indigo-700 px-3 py-1.5 rounded-full text-sm font-semibold">
+                  <User className="w-4 h-4" />
+                  {session.user?.name}
                 </div>
-              ) : (
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => setShowAuthModal(true)}
-                    className="text-sm font-bold text-indigo-600 hover:text-indigo-800 transition-colors px-3 py-2"
-                  >
-                    Sign In
-                  </button>
-                  <button
-                    onClick={() => setShowAuthModal(true)}
-                    className="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold px-4 py-2 rounded-xl transition-all shadow-sm flex items-center gap-1.5"
-                  >
-                    <LogIn className="w-4 h-4" /> Register
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
+                <Link href="/dashboard" className="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold px-4 py-2 rounded-xl transition-all shadow-sm flex items-center gap-1.5">
+                  <LayoutDashboard className="w-4 h-4" /> Dashboard
+                </Link>
+                <button onClick={() => signOut()} className="text-red-400 hover:text-red-600 text-sm font-semibold flex items-center gap-1 transition-colors">
+                  <LogOut className="w-4 h-4" />
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setShowAuthModal(true)}
+                  className="text-sm font-bold text-indigo-600 hover:text-indigo-800 transition-colors px-3 py-2"
+                >
+                  Sign In
+                </button>
+                <button
+                  onClick={() => setShowAuthModal(true)}
+                  className="bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold px-4 py-2 rounded-xl transition-all shadow-sm flex items-center gap-1.5"
+                >
+                  <LogIn className="w-4 h-4" /> Register
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </header>
 
