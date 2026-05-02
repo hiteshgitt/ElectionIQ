@@ -1,9 +1,12 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { LayoutDashboard, User, Upload, FileText, CheckCircle, ClipboardList, MapPin, Calendar } from 'lucide-react';
+import { LayoutDashboard, User, Upload, FileText, CheckCircle, ClipboardList, MapPin, Calendar, Loader2 } from 'lucide-react';
+import { db, storage } from '@/utils/firebase';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 export default function DashboardPage() {
   const { data: session, status } = useSession();
@@ -13,18 +16,39 @@ export default function DashboardPage() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [submitted, setSubmitted] = useState(false);
   const [docSubmitted, setDocSubmitted] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [activeTab, setActiveTab] = useState<'details' | 'documents'>('details');
 
-  // Load saved profile from localStorage (includes age+state from home page)
+  // Load saved profile from Firebase (fallback to localStorage)
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem('electioniq_profile');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        setFormData(prev => ({ ...prev, ...parsed }));
+    async function loadProfile() {
+      if (!session?.user?.email) return;
+
+      try {
+        // 1. Try Firebase first
+        const docRef = doc(db, "users", session.user.email);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          setFormData(prev => ({ ...prev, ...docSnap.data() }));
+        } else {
+          // 2. Fallback to localStorage
+          const saved = localStorage.getItem('electioniq_profile');
+          if (saved) {
+            const parsed = JSON.parse(saved);
+            setFormData(prev => ({ ...prev, ...parsed }));
+          }
+        }
+      } catch (err) {
+        console.error("Error loading profile:", err);
       }
-    } catch (_) {}
-  }, []);
+    }
+    
+    if (status === 'authenticated') {
+      loadProfile();
+    }
+  }, [session, status]);
 
   if (status === 'loading') {
     return (
@@ -96,64 +120,91 @@ export default function DashboardPage() {
                 <p className="text-gray-500">Your voter profile has been updated successfully.</p>
               </div>
             ) : (
-              <form onSubmit={e => { e.preventDefault(); localStorage.setItem('electioniq_profile', JSON.stringify(formData)); setSubmitted(true); }} className="space-y-5">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-1.5 flex items-center gap-1.5">
-                      <User className="w-4 h-4 text-indigo-400" /> Full Name
-                    </label>
-                    <input
-                      type="text" required value={formData.fullName}
-                      onChange={e => setFormData(p => ({ ...p, fullName: e.target.value }))}
-                      placeholder="As per Aadhaar/PAN"
-                      className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all text-sm"
-                    />
+                <form 
+                  onSubmit={async (e) => { 
+                    e.preventDefault(); 
+                    if (!session?.user?.email) return;
+                    setIsSaving(true);
+                    try {
+                      // Save to Firestore
+                      await setDoc(doc(db, "users", session.user.email), {
+                        ...formData,
+                        updatedAt: new Date().toISOString()
+                      }, { merge: true });
+                      
+                      // Also sync to localStorage
+                      localStorage.setItem('electioniq_profile', JSON.stringify(formData));
+                      setSubmitted(true);
+                    } catch (err) {
+                      console.error("Error saving profile:", err);
+                    } finally {
+                      setIsSaving(false);
+                    }
+                  }} 
+                  className="space-y-5"
+                >
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-1.5 flex items-center gap-1.5">
+                        <User className="w-4 h-4 text-indigo-400" /> Full Name
+                      </label>
+                      <input
+                        type="text" required value={formData.fullName}
+                        onChange={e => setFormData(p => ({ ...p, fullName: e.target.value }))}
+                        placeholder="As per Aadhaar/PAN"
+                        className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all text-sm"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-1.5 flex items-center gap-1.5">
+                        <Calendar className="w-4 h-4 text-indigo-400" /> Date of Birth
+                      </label>
+                      <input
+                        type="date" required value={formData.dob}
+                        onChange={e => setFormData(p => ({ ...p, dob: e.target.value }))}
+                        className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all text-sm"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-1.5 flex items-center gap-1.5">
+                        <MapPin className="w-4 h-4 text-indigo-400" /> State / UT
+                      </label>
+                      <input
+                        type="text" required value={formData.state}
+                        onChange={e => setFormData(p => ({ ...p, state: e.target.value }))}
+                        placeholder="e.g. Maharashtra"
+                        className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all text-sm"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-1.5 text-gray-700">Phone Number</label>
+                      <input
+                        type="tel" value={formData.phone}
+                        onChange={e => setFormData(p => ({ ...p, phone: e.target.value }))}
+                        placeholder="+91 XXXXX XXXXX"
+                        className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all text-sm"
+                      />
+                    </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-1.5 flex items-center gap-1.5">
-                      <Calendar className="w-4 h-4 text-indigo-400" /> Date of Birth
-                    </label>
-                    <input
-                      type="date" required value={formData.dob}
-                      onChange={e => setFormData(p => ({ ...p, dob: e.target.value }))}
-                      className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all text-sm"
+                    <label className="block text-sm font-semibold text-gray-700 mb-1.5 text-gray-700">Residential Address</label>
+                    <textarea
+                      required value={formData.address}
+                      onChange={e => setFormData(p => ({ ...p, address: e.target.value }))}
+                      placeholder="Full address for voter registration"
+                      rows={3}
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all text-sm resize-none"
                     />
                   </div>
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-1.5 flex items-center gap-1.5">
-                      <MapPin className="w-4 h-4 text-indigo-400" /> State / UT
-                    </label>
-                    <input
-                      type="text" required value={formData.state}
-                      onChange={e => setFormData(p => ({ ...p, state: e.target.value }))}
-                      placeholder="e.g. Maharashtra"
-                      className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all text-sm"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-1.5">Phone Number</label>
-                    <input
-                      type="tel" value={formData.phone}
-                      onChange={e => setFormData(p => ({ ...p, phone: e.target.value }))}
-                      placeholder="+91 XXXXX XXXXX"
-                      className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all text-sm"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-1.5">Residential Address</label>
-                  <textarea
-                    required value={formData.address}
-                    onChange={e => setFormData(p => ({ ...p, address: e.target.value }))}
-                    placeholder="Full address for voter registration"
-                    rows={3}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all text-sm resize-none"
-                  />
-                </div>
-                <button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl shadow-md hover:shadow-lg transition-all">
-                  Save My Details
-                </button>
-              </form>
+                  <button 
+                    type="submit" 
+                    disabled={isSaving}
+                    className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white font-bold py-3 rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2"
+                  >
+                    {isSaving && <Loader2 className="w-4 h-4 animate-spin" />}
+                    Save My Details
+                  </button>
+                </form>
             )}
           </div>
         )}
@@ -187,11 +238,33 @@ export default function DashboardPage() {
             </div>
 
             <button
-              onClick={() => selectedFile && setDocSubmitted(true)}
-              disabled={!selectedFile}
-              className="w-full bg-green-600 hover:bg-green-700 disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold py-3 rounded-xl transition-all shadow-md"
+              onClick={async () => {
+                if (!selectedFile || !session?.user?.email) return;
+                setIsUploading(true);
+                try {
+                  const storageRef = ref(storage, `documents/${session.user.email}/${selectedFile.name}`);
+                  await uploadBytes(storageRef, selectedFile);
+                  const downloadURL = await getDownloadURL(storageRef);
+                  
+                  // Save file metadata to Firestore
+                  await setDoc(doc(db, "users", session.user.email), {
+                    documentUrl: downloadURL,
+                    documentName: selectedFile.name,
+                    documentUploadedAt: new Date().toISOString()
+                  }, { merge: true });
+                  
+                  setDocSubmitted(true);
+                } catch (err) {
+                  console.error("Error uploading document:", err);
+                } finally {
+                  setIsUploading(false);
+                }
+              }}
+              disabled={!selectedFile || isUploading}
+              className="w-full bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 rounded-xl transition-all shadow-md flex items-center justify-center gap-2"
             >
-              {submitted ? '✅ Document Submitted!' : 'Submit Document'}
+              {isUploading && <Loader2 className="w-4 h-4 animate-spin" />}
+              {docSubmitted ? '✅ Document Submitted!' : 'Submit Document'}
             </button>
           </div>
         )}

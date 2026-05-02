@@ -5,8 +5,10 @@ import InputForm from '@/components/InputForm';
 import AssistantUI from '@/components/AssistantUI';
 import { UserContext } from '@/utils/eligibility';
 import { AssistantResponse } from '@/ai/vertex';
-import { ShieldCheck, Vote, RefreshCw, LogIn, Mail, Lock } from 'lucide-react';
+import { ShieldCheck, Vote, RefreshCw, LogIn, Mail, Lock, Loader2 } from 'lucide-react';
 import { useSession, signIn } from 'next-auth/react';
+import { db } from '@/utils/firebase';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 
 const STORAGE_KEY = 'electioniq_last_result';
 const USER_CONTEXT_KEY = 'electioniq_last_context';
@@ -21,18 +23,36 @@ export default function Home() {
   const [password, setPassword] = useState('');
   const [authError, setAuthError] = useState('');
 
-  // Load cached result from localStorage when logged in
+  // Load cached result from Firebase (fallback to localStorage)
   useEffect(() => {
-    if (session) {
+    async function loadCachedResult() {
+      if (!session?.user?.email) {
+        // Clear result when logged out so form shows
+        setResult(null);
+        return;
+      }
+
       try {
-        const cached = localStorage.getItem(STORAGE_KEY);
-        if (cached) setResult(JSON.parse(cached));
-      } catch (_) {}
-    } else {
-      // Clear result when logged out so form shows
-      setResult(null);
+        // 1. Try Firebase first
+        const docRef = doc(db, "results", session.user.email);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          setResult(docSnap.data() as AssistantResponse);
+        } else {
+          // 2. Fallback to localStorage
+          const cached = localStorage.getItem(STORAGE_KEY);
+          if (cached) setResult(JSON.parse(cached));
+        }
+      } catch (err) {
+        console.error("Error loading cached result:", err);
+      }
     }
-  }, [session]);
+
+    if (status === 'authenticated' || status === 'unauthenticated') {
+      loadCachedResult();
+    }
+  }, [session, status]);
 
   const handleSubmit = async (data: UserContext) => {
     setIsLoading(true);
@@ -52,10 +72,28 @@ export default function Home() {
         setError(resData.error || "Something went wrong.");
       } else {
         setResult(resData.data);
-        // Persist result + context so it survives page refresh
+        
+        // Persist result + context
         localStorage.setItem(STORAGE_KEY, JSON.stringify(resData.data));
         localStorage.setItem(USER_CONTEXT_KEY, JSON.stringify(data));
-        // Also pre-fill dashboard with age and state
+        
+        // If logged in, save to Firestore
+        if (session?.user?.email) {
+          try {
+            await setDoc(doc(db, "results", session.user.email), resData.data);
+            
+            // Also update profile state/age in Firestore
+            await setDoc(doc(db, "users", session.user.email), {
+              state: data.state,
+              age: data.age,
+              lastCheckedAt: new Date().toISOString()
+            }, { merge: true });
+          } catch (err) {
+            console.error("Error saving to Firebase:", err);
+          }
+        }
+
+        // Also pre-fill dashboard local cache
         const existing = JSON.parse(localStorage.getItem('electioniq_profile') || '{}');
         localStorage.setItem('electioniq_profile', JSON.stringify({
           ...existing,
