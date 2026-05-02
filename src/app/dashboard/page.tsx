@@ -137,6 +137,7 @@ export default function DashboardPage() {
                       setSubmitted(true);
                     } catch (err) {
                       console.error("Error saving profile:", err);
+                      alert("Sync failed! Check your connection or Firestore rules.");
                     } finally {
                       setIsSaving(false);
                     }

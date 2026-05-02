@@ -34,8 +34,23 @@ export default function Home() {
         return;
       }
 
+      // 1. Immediate fallback to localStorage for instant UI
       try {
-        // 1. Fetch Profile
+        const savedProfile = localStorage.getItem('electioniq_profile');
+        if (savedProfile) {
+          const parsed = JSON.parse(savedProfile);
+          setUserProfile({
+            age: parsed.age,
+            state: parsed.state,
+            firstTime: parsed.firstTime ?? true
+          });
+        }
+        const savedResult = localStorage.getItem(STORAGE_KEY);
+        if (savedResult) setResult(JSON.parse(savedResult));
+      } catch (_) {}
+
+      try {
+        // 2. Fetch from Firestore (cloud sync)
         const profileRef = doc(db, "users", session.user.email);
         const profileSnap = await getDoc(profileRef);
         if (profileSnap.exists()) {
@@ -45,20 +60,18 @@ export default function Home() {
             state: profileData.state,
             firstTime: profileData.firstTime ?? true
           });
+          localStorage.setItem('electioniq_profile', JSON.stringify(profileData));
         }
 
-        // 2. Fetch Result
         const resultRef = doc(db, "results", session.user.email);
         const resultSnap = await getDoc(resultRef);
-
         if (resultSnap.exists()) {
-          setResult(resultSnap.data() as AssistantResponse);
-        } else {
-          const cached = localStorage.getItem(STORAGE_KEY);
-          if (cached) setResult(JSON.parse(cached));
+          const cloudResult = resultSnap.data() as AssistantResponse;
+          setResult(cloudResult);
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(cloudResult));
         }
       } catch (err) {
-        console.error("Error loading data:", err);
+        console.error("Firestore sync failed, using local cache:", err);
       }
     }
 
@@ -161,8 +174,8 @@ export default function Home() {
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-indigo-400/20 blur-3xl -z-10 animate-pulse delay-1000"></div>
 
       <main className="container mx-auto px-4 py-12 max-w-5xl">
-        {/* Header - Only show for guests or when no results */}
-        {(!session || !result) && (
+        {/* Header - Only show for guests */}
+        {!session && (
           <header className="text-center mb-16 animate-in fade-in slide-in-from-top-4 duration-700">
             <div className="inline-flex items-center justify-center p-4 bg-white rounded-full shadow-md mb-6 border border-gray-100">
               <Vote className="w-12 h-12 text-indigo-600" />
