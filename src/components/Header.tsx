@@ -16,8 +16,21 @@ export default function Header() {
     e.preventDefault();
     setAuthError('');
     const res = await signIn('credentials', { email, password, redirect: false });
-    if (res?.error) setAuthError('Invalid credentials. Use any email & password for demo.');
-    else setShowAuthModal(false);
+    if (res?.error) {
+      setAuthError('Invalid credentials. Use any email & password for demo.');
+    } else {
+      // Send welcome/confirmation email
+      try {
+        await fetch('/api/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, name: email.split('@')[0] }),
+        });
+      } catch (_) {
+        // Email is best-effort — don't block login if it fails
+      }
+      setShowAuthModal(false);
+    }
   };
 
   return (
