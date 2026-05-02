@@ -28,16 +28,16 @@ export default function AssistantUI({ data, profile }: AssistantUIProps) {
     <div className="w-full space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       
       {/* Eligibility Card */}
-      <div className={`p-6 rounded-2xl shadow-lg border relative overflow-hidden ${isEligible ? 'bg-green-50 border-green-200' : 'bg-orange-50 border-orange-200'}`}>
+      <div className={`p-6 rounded-2xl shadow-lg border-2 relative overflow-hidden ${isEligible ? 'bg-green-50 border-green-300' : 'bg-orange-50 border-orange-300'}`}>
         <div className="flex items-start gap-4">
-          <div className={`p-3 rounded-full ${isEligible ? 'bg-green-100 text-green-600' : 'bg-orange-100 text-orange-600'}`}>
+          <div className={`p-3 rounded-full ${isEligible ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'}`}>
             {isEligible ? <CheckCircle className="w-8 h-8" /> : <AlertTriangle className="w-8 h-8" />}
           </div>
           <div>
-            <h2 className={`text-2xl font-bold mb-2 ${isEligible ? 'text-green-800' : 'text-orange-800'}`}>
+            <h2 className={`text-2xl font-bold mb-2 ${isEligible ? 'text-green-900' : 'text-orange-900'}`}>
               {isEligible ? "You're Eligible!" : "Not Yet Eligible"}
             </h2>
-            <p className={`text-lg ${isEligible ? 'text-green-700' : 'text-orange-700'}`}>
+            <p className={`text-lg font-medium ${isEligible ? 'text-green-800' : 'text-orange-800'}`}>
               {eligibilityText}
             </p>
           </div>
@@ -45,12 +45,12 @@ export default function AssistantUI({ data, profile }: AssistantUIProps) {
       </div>
 
       {/* Explanation Card */}
-      <div className="bg-white/90 backdrop-blur-md rounded-2xl shadow-lg p-6 border border-gray-100">
-        <h3 className="text-xl font-bold text-gray-800 mb-3 flex items-center gap-2">
-          <Info className="w-5 h-5 text-blue-500" />
+      <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-200">
+        <h3 className="text-xl font-bold text-gray-900 mb-3 flex items-center gap-2">
+          <Info className="w-5 h-5 text-blue-600" />
           What you need to know
         </h3>
-        <p className="text-gray-700 leading-relaxed text-lg">
+        <p className="text-gray-800 leading-relaxed text-lg font-medium">
           {data.explanation}
         </p>
       </div>

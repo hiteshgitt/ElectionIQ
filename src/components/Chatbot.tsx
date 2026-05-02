@@ -41,7 +41,7 @@ export default function Chatbot({ contextData }: ChatbotProps) {
       } else {
         setMessages(prev => [...prev, { role: 'ai', text: "Sorry, I had trouble processing that." }]);
       }
-    } catch (err) {
+    } catch (_) {
       setMessages(prev => [...prev, { role: 'ai', text: "Connection error." }]);
     } finally {
       setIsLoading(false);

@@ -5,9 +5,10 @@ import InputForm from '@/components/InputForm';
 import AssistantUI from '@/components/AssistantUI';
 import { UserContext } from '@/utils/eligibility';
 import { AssistantResponse } from '@/ai/vertex';
-import { ShieldCheck, Vote, RefreshCw, LogIn, Mail, Lock, Loader2, User } from 'lucide-react';
+import { ShieldCheck, Vote, LogIn, User, Mail, Lock } from 'lucide-react';
 import { useSession, signIn } from 'next-auth/react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { db } from '@/utils/firebase';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 
@@ -212,7 +213,7 @@ export default function Home() {
                   </button>
                   <button onClick={() => signIn('google')}
                     className="bg-white hover:bg-gray-50 border border-gray-200 text-gray-700 text-sm font-bold px-6 py-2.5 rounded-xl transition-all shadow-sm flex items-center gap-2">
-                    <img src="https://www.google.com/favicon.ico" className="w-4 h-4" alt="G" />
+                    <Image src="https://www.google.com/favicon.ico" width={16} height={16} className="w-4 h-4" alt="G" />
                     Continue with Google
                   </button>
                 </div>
@@ -309,9 +310,9 @@ export default function Home() {
             <div className="flex items-center gap-3 mb-5">
               <hr className="flex-1 border-gray-200" /><span className="text-gray-400 text-sm font-semibold">OR</span><hr className="flex-1 border-gray-200" />
             </div>
-            <button onClick={() => { signIn('google'); setShowAuthModal(false); }}
+             <button onClick={() => { signIn('google'); setShowAuthModal(false); }}
               className="w-full bg-white hover:bg-gray-50 border border-gray-200 text-gray-700 font-bold py-3 rounded-xl flex items-center justify-center gap-3 transition-all shadow-sm">
-              <img src="https://www.google.com/favicon.ico" alt="Google" className="w-5 h-5" />
+              <Image src="https://www.google.com/favicon.ico" alt="Google" width={20} height={20} className="w-5 h-5" />
               Continue with Google
             </button>
           </div>

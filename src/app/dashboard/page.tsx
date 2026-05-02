@@ -40,8 +40,8 @@ export default function DashboardPage() {
             setFormData(prev => ({ ...prev, ...parsed }));
           }
         }
-      } catch (err) {
-        console.error("Error loading profile:", err);
+      } catch (_) {
+        // Silent error for dashboard fallback
       }
     }
     
@@ -146,46 +146,50 @@ export default function DashboardPage() {
                 >
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-1.5 flex items-center gap-1.5">
-                        <User className="w-4 h-4 text-indigo-400" /> Full Name
+                      <label htmlFor="fullName" className="block text-sm font-semibold text-gray-800 mb-1.5 flex items-center gap-1.5">
+                        <User className="w-4 h-4 text-indigo-600" /> Full Name
                       </label>
                       <input
+                        id="fullName"
                         type="text" required value={formData.fullName}
                         onChange={e => setFormData(p => ({ ...p, fullName: e.target.value }))}
                         placeholder="As per Aadhaar/PAN"
-                        className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all text-sm"
+                        className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all text-sm text-gray-900 placeholder:text-gray-500"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-1.5 flex items-center gap-1.5">
-                        <Calendar className="w-4 h-4 text-indigo-400" /> Date of Birth
+                      <label htmlFor="dob" className="block text-sm font-semibold text-gray-800 mb-1.5 flex items-center gap-1.5">
+                        <Calendar className="w-4 h-4 text-indigo-600" /> Date of Birth
                       </label>
                       <input
+                        id="dob"
                         type="date" required value={formData.dob}
                         onChange={e => setFormData(p => ({ ...p, dob: e.target.value }))}
-                        className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all text-sm"
+                        className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all text-sm text-gray-900"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-1.5 flex items-center gap-1.5">
-                        <MapPin className="w-4 h-4 text-indigo-400" /> State / UT
+                      <label htmlFor="state" className="block text-sm font-semibold text-gray-800 mb-1.5 flex items-center gap-1.5">
+                        <MapPin className="w-4 h-4 text-indigo-600" /> State / UT
                       </label>
                       <input
+                        id="state"
                         type="text" required value={formData.state}
                         onChange={e => setFormData(p => ({ ...p, state: e.target.value }))}
                         placeholder="e.g. Maharashtra"
-                        className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all text-sm"
+                        className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all text-sm text-gray-900 placeholder:text-gray-500"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-1.5 flex items-center gap-1.5">
-                        <Calendar className="w-4 h-4 text-indigo-400" /> Age
+                      <label htmlFor="age" className="block text-sm font-semibold text-gray-800 mb-1.5 flex items-center gap-1.5">
+                        <Calendar className="w-4 h-4 text-indigo-600" /> Age
                       </label>
                       <input
+                        id="age"
                         type="number" required value={formData.age}
                         onChange={e => setFormData(p => ({ ...p, age: e.target.value }))}
                         placeholder="e.g. 18"
-                        className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all text-sm"
+                        className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all text-sm text-gray-900 placeholder:text-gray-500"
                       />
                     </div>
                     <div>

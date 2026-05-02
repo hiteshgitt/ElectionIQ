@@ -8,8 +8,6 @@ import { usePathname } from 'next/navigation';
 
 export default function Header() {
   const { data: session } = useSession();
-  const pathname = usePathname();
-  const isHomePage = pathname === '/';
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

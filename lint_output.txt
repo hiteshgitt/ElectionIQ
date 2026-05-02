@@ -1,0 +1,36 @@
+
+/var/www/html/ElectionIQ/src/app/page.tsx
+    8:29  warning  'RefreshCw' is defined but never used                                                                                                                                                                                                                                                    @typescript-eslint/no-unused-vars
+    8:59  warning  'Loader2' is defined but never used                                                                                                                                                                                                                                                      @typescript-eslint/no-unused-vars
+   50:16  warning  '_' is defined but never used                                                                                                                                                                                                                                                            @typescript-eslint/no-unused-vars
+  158:16  warning  '_' is defined but never used                                                                                                                                                                                                                                                            @typescript-eslint/no-unused-vars
+  215:21  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  314:15  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+/var/www/html/ElectionIQ/src/components/Chatbot.tsx
+  44:14  warning  'err' is defined but never used  @typescript-eslint/no-unused-vars
+
+/var/www/html/ElectionIQ/src/components/Header.tsx
+  13:9   warning  'isHomePage' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  33:16  warning  '_' is defined but never used                    @typescript-eslint/no-unused-vars
+
+/var/www/html/ElectionIQ/src/components/InputForm.tsx
+  20:27  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+/var/www/html/ElectionIQ/src/components/InputForm.tsx:20:27
+  18 |   // Sync with initialData (from Firestore)
+  19 |   useEffect(() => {
+> 20 |     if (initialData?.age) setAge(initialData.age);
+     |                           ^^^^^^ Avoid calling setState() directly within an effect
+  21 |     if (initialData?.state) setState(initialData.state);
+  22 |     if (initialData?.firstTime !== undefined) setIsFirstTimeVoter(initialData.firstTime);
+  23 |   }, [initialData]);  react-hooks/set-state-in-effect
+
+✖ 10 problems (1 error, 9 warnings)
+

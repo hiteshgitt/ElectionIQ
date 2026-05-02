@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Upload, FileText, CheckCircle, LogIn, Mail, Lock, X } from 'lucide-react';
+import { Upload, FileText, CheckCircle, LogIn, Mail, X } from 'lucide-react';
 import { signIn, signOut, useSession } from 'next-auth/react';
+import Image from 'next/image';
 
 export default function UserPanel() {
   const { data: session } = useSession();
@@ -44,7 +45,7 @@ export default function UserPanel() {
               onClick={() => signIn('google')}
               className="flex-1 bg-white hover:bg-gray-50 border border-gray-200 text-gray-700 font-bold py-3 px-6 rounded-xl transition-all shadow-sm flex items-center justify-center gap-2"
             >
-              <img src="https://www.google.com/favicon.ico" alt="G" className="w-4 h-4" />
+              <Image src="https://www.google.com/favicon.ico" alt="G" width={16} height={16} className="w-4 h-4" />
               Continue with Google
             </button>
           </div>
