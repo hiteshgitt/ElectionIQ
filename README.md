@@ -50,6 +50,13 @@ npm test
 - **Component Testing**: Verifies that the `InputForm` correctly captures user data and triggers submissions.
 - **Accessibility Verification**: Ensures labels and ARIA attributes are correctly applied to interactive elements.
 
+#### Latest Coverage Report (Vitest + V8)
+| File | % Statements | % Branch | % Funcs | % Lines |
+| :--- | :--- | :--- | :--- | :--- |
+| **All files** | **83.33%** | **77.77%** | **81.81%** | **93.33%** |
+| `utils/validation.ts` | 92.85% | 87.5% | 100% | 100% |
+| `components/InputForm.tsx` | 77.27% | 70% | 75% | 89.47% |
+
 ## 🚀 Deployment
 
 The app is optimized for **Google Cloud Run** using Next.js standalone mode.

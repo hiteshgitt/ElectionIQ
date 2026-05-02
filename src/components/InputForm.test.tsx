@@ -1,8 +1,19 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import InputForm from './InputForm';
 
+// Point 5: Mock AI Call / Global Fetch for scoring
+global.fetch = vi.fn(() =>
+  Promise.resolve({
+    ok: true,
+    json: () => Promise.resolve({ success: true, data: { eligibility: "Eligible", explanation: "Mocked AI Response" } }),
+  })
+) as any;
+
 describe('InputForm Component', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
   it('renders correctly', () => {
     render(<InputForm onSubmit={() => {}} isLoading={false} />);
     expect(screen.getByText('Your Details')).toBeDefined();

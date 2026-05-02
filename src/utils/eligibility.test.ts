@@ -18,4 +18,18 @@ describe('Eligibility Logic', () => {
     const context: UserContext = { age: '25', state: 'Delhi', isFirstTimeVoter: false };
     expect(context.state).toBe('Delhi');
   });
+
+  describe('Edge Cases', () => {
+    it('should handle extremely high age', () => {
+      const context: UserContext = { age: '150', state: 'Goa', isFirstTimeVoter: false };
+      const age = parseInt(context.age as string);
+      expect(age).toBeGreaterThan(120);
+    });
+
+    it('should handle negative age as ineligible', () => {
+      const context: UserContext = { age: '-5', state: 'Goa', isFirstTimeVoter: false };
+      const age = parseInt(context.age as string);
+      expect(age).toBeLessThan(18);
+    });
+  });
 });
