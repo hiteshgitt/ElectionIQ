@@ -31,8 +31,7 @@ export default function RootLayout({
           <Chatbot />
         </Providers>
       </body>
-      <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID || ""} />
-      <GoogleTagManager gtmId={process.env.NEXT_PUBLIC_GTM_ID || ""} />
+      <GoogleAnalytics gaId="G-EGW17NK747" />
     </html>
   );
 }
