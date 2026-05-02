@@ -3,7 +3,8 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Providers from "@/components/Providers";
 import Chatbot from "@/components/Chatbot";
-import { GoogleAnalytics, GoogleTagManager } from '@next/third-parties/google';
+import Header from "@/components/Header";
+import { GoogleAnalytics } from '@next/third-parties/google';
 
 const inter = Inter({
   subsets: ["latin"],
@@ -27,6 +28,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         <Providers>
+          <Header />
           {children}
           <Chatbot />
         </Providers>
