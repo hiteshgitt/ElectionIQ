@@ -28,8 +28,6 @@ const handler = NextAuth({
     signIn: "/",
   },
   secret: process.env.NEXTAUTH_SECRET,
-  // Required for Cloud Run / reverse proxy deployments
-  trustHost: true,
   cookies: {
     sessionToken: {
       name: `__Secure-next-auth.session-token`,
