@@ -3,16 +3,21 @@
 import React, { useState } from 'react';
 import { MessageCircle, X, Send, Loader2 } from 'lucide-react';
 import { AssistantResponse } from '@/ai/vertex';
+import { useSession } from 'next-auth/react';
 
 interface ChatbotProps {
   contextData?: AssistantResponse | null;
 }
 
 export default function Chatbot({ contextData }: ChatbotProps) {
+  const { data: session } = useSession();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<{role: 'user' | 'ai', text: string}[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+
+  // Do not render the chatbot if the user is not logged in
+  if (!session) return null;
 
   const sendMessage = async (e: React.FormEvent) => {
     e.preventDefault();

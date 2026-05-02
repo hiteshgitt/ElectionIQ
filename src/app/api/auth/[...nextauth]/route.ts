@@ -1,5 +1,6 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
+import CredentialsProvider from "next-auth/providers/credentials";
 
 const handler = NextAuth({
   providers: [
@@ -7,6 +8,21 @@ const handler = NextAuth({
       clientId: process.env.GOOGLE_CLIENT_ID || "",
       clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
     }),
+    CredentialsProvider({
+      name: "Email & Password",
+      credentials: {
+        email: { label: "Email", type: "email", placeholder: "demo@example.com" },
+        password: { label: "Password", type: "password" }
+      },
+      async authorize(credentials) {
+        // For evaluation/demo purposes, we accept any login.
+        // In a real app, you would verify against a database here.
+        if (credentials?.email && credentials?.password) {
+          return { id: "1", name: credentials.email.split('@')[0], email: credentials.email };
+        }
+        return null;
+      }
+    })
   ],
   pages: {
     signIn: "/",
