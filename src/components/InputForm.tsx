@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { UserContext } from '@/utils/eligibility';
+import { UserContext } from '@/types/voter';
+import { INDIAN_STATES } from '@/constants/states';
 import { Send, MapPin, Calendar, UserCheck } from 'lucide-react';
 
 /**
@@ -40,14 +41,7 @@ export default function InputForm({ onSubmit, isLoading, initialData }: InputFor
     }
   };
 
-  const states = [
-    "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", 
-    "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jharkhand", "Karnataka", 
-    "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram", 
-    "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", 
-    "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal",
-    "Delhi", "Jammu and Kashmir"
-  ].sort();
+  const states = INDIAN_STATES;
 
   return (
     <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-xl p-8 border border-white/50 relative overflow-hidden group hover:shadow-2xl transition-all duration-300">

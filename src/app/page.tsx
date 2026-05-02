@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import InputForm from '@/components/InputForm';
 import AssistantUI from '@/components/AssistantUI';
-import { UserContext } from '@/utils/eligibility';
+import { UserContext } from '@/types/voter';
 import { AssistantResponse } from '@/ai/vertex';
 import { ShieldCheck, Vote, LogIn, User, Mail, Lock } from 'lucide-react';
 import { useSession, signIn } from 'next-auth/react';

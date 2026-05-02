@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { UserContext } from './eligibility';
+import { UserContext } from '@/types/voter';
 
 describe('Eligibility Logic', () => {
   it('should be eligible if age is 18', () => {
