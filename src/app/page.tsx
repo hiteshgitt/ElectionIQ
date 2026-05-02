@@ -23,35 +23,47 @@ export default function Home() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [authError, setAuthError] = useState('');
+  const [userProfile, setUserProfile] = useState<{ age?: string, state?: string, firstTime?: boolean } | null>(null);
 
-  // Load cached result from Firebase (fallback to localStorage)
+  // Load cached result and profile from Firebase (fallback to localStorage)
   useEffect(() => {
-    async function loadCachedResult() {
+    async function loadData() {
       if (!session?.user?.email) {
-        // Clear result when logged out so form shows
         setResult(null);
+        setUserProfile(null);
         return;
       }
 
       try {
-        // 1. Try Firebase first
-        const docRef = doc(db, "results", session.user.email);
-        const docSnap = await getDoc(docRef);
+        // 1. Fetch Profile
+        const profileRef = doc(db, "users", session.user.email);
+        const profileSnap = await getDoc(profileRef);
+        if (profileSnap.exists()) {
+          const profileData = profileSnap.data();
+          setUserProfile({
+            age: profileData.age,
+            state: profileData.state,
+            firstTime: profileData.firstTime ?? true
+          });
+        }
 
-        if (docSnap.exists()) {
-          setResult(docSnap.data() as AssistantResponse);
+        // 2. Fetch Result
+        const resultRef = doc(db, "results", session.user.email);
+        const resultSnap = await getDoc(resultRef);
+
+        if (resultSnap.exists()) {
+          setResult(resultSnap.data() as AssistantResponse);
         } else {
-          // 2. Fallback to localStorage
           const cached = localStorage.getItem(STORAGE_KEY);
           if (cached) setResult(JSON.parse(cached));
         }
       } catch (err) {
-        console.error("Error loading cached result:", err);
+        console.error("Error loading data:", err);
       }
     }
 
     if (status === 'authenticated' || status === 'unauthenticated') {
-      loadCachedResult();
+      loadData();
     }
   }, [session, status]);
 
@@ -200,59 +212,43 @@ export default function Home() {
           </div>
         )}
 
-        {/* ── LOGGED IN → Show Results or Welcome Dashboard ── */}
+        {/* ── LOGGED IN → Show Results + Form in two columns (Inner Page Feel) ── */}
         {session && (
-          <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
-            {result ? (
-              <div>
-                <div className="flex items-center justify-between mb-6 bg-white/60 p-4 rounded-2xl border border-gray-100 backdrop-blur-sm">
+          <div className="grid md:grid-cols-12 gap-8 items-start animate-in fade-in slide-in-from-bottom-4 duration-700">
+            {/* Left Col: Form (Pre-filled from Dashboard) */}
+            <div className={`transition-all duration-700 ease-in-out ${result ? 'md:col-span-4' : 'md:col-span-8 md:col-start-3'}`}>
+              <div className="bg-white rounded-3xl p-6 shadow-xl border border-gray-100 relative overflow-hidden mb-6">
+                <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-50 rounded-bl-full -z-10"></div>
+                <h3 className="font-bold text-gray-800 mb-4 flex items-center gap-2">
+                  <User className="w-5 h-5 text-indigo-500" /> Your Details
+                </h3>
+                <InputForm 
+                  onSubmit={handleSubmit} 
+                  isLoading={isLoading} 
+                  initialData={userProfile || undefined}
+                />
+              </div>
+              
+              <Link href="/dashboard" className="block w-full text-center py-3 bg-indigo-50 text-indigo-700 font-bold rounded-2xl border border-indigo-100 hover:bg-indigo-100 transition-all text-sm">
+                Edit Profile in Dashboard
+              </Link>
+            </div>
+
+            {/* Right Col: Results */}
+            {result && (
+              <div className="md:col-span-8 w-full space-y-6">
+                <div className="bg-white/60 p-4 rounded-2xl border border-gray-100 backdrop-blur-sm flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-indigo-200">
-                      <ShieldCheck className="w-6 h-6 text-white" />
+                    <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-200">
+                      <ShieldCheck className="w-5 h-5 text-white" />
                     </div>
-                    <div>
-                      <p className="text-xs text-gray-500 font-bold uppercase tracking-wider">Your Active Journey</p>
-                      <p className="font-extrabold text-gray-800 text-lg">{session.user?.name}</p>
-                    </div>
+                    <p className="font-bold text-gray-800">Saved Journey for {session.user?.name?.split(' ')[0]}</p>
                   </div>
-                  <div className="flex gap-2">
-                    <button onClick={handleReset}
-                      className="flex items-center gap-2 text-sm text-indigo-600 hover:text-indigo-800 font-bold border border-indigo-100 px-5 py-2.5 rounded-xl hover:bg-white transition-all shadow-sm">
-                      <RefreshCw className="w-4 h-4" /> New Check
-                    </button>
-                  </div>
+                  <button onClick={handleReset} className="text-xs font-bold text-indigo-600 hover:text-indigo-800">
+                    Clear Result
+                  </button>
                 </div>
                 <AssistantUI data={result} />
-              </div>
-            ) : (
-              <div className="max-w-4xl mx-auto">
-                <div className="bg-white rounded-3xl p-10 shadow-xl border border-gray-100 text-center mb-12 relative overflow-hidden">
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-50 rounded-bl-full -z-10"></div>
-                  <h2 className="text-3xl font-extrabold text-gray-800 mb-3">Welcome Back, {session.user?.name?.split(' ')[0]}! 👋</h2>
-                  <p className="text-gray-500 max-w-xl mx-auto mb-8">
-                    You're signed in and secure. Start your personalized election journey below or visit your dashboard to manage your documents.
-                  </p>
-                  <div className="flex justify-center gap-4">
-                    <button 
-                      onClick={() => document.getElementById('input-form-section')?.scrollIntoView({ behavior: 'smooth' })}
-                      className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 px-8 rounded-2xl shadow-lg shadow-indigo-200 transition-all flex items-center gap-2"
-                    >
-                      <Vote className="w-5 h-5" /> Start New Journey
-                    </button>
-                    <Link href="/dashboard" className="bg-white hover:bg-gray-50 border border-gray-200 text-gray-700 font-bold py-3.5 px-8 rounded-2xl transition-all shadow-sm">
-                      Go to Dashboard
-                    </Link>
-                  </div>
-                </div>
-                
-                <div id="input-form-section" className="max-w-2xl mx-auto scroll-mt-24">
-                  <InputForm onSubmit={handleSubmit} isLoading={isLoading} />
-                  {error && (
-                    <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm font-medium">
-                      {error}
-                    </div>
-                  )}
-                </div>
               </div>
             )}
           </div>

@@ -1,18 +1,26 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { UserContext } from '@/utils/eligibility';
 import { Send, MapPin, Calendar, UserCheck } from 'lucide-react';
 
 interface InputFormProps {
   onSubmit: (data: UserContext) => void;
   isLoading: boolean;
+  initialData?: { age?: string, state?: string, firstTime?: boolean };
 }
 
-export default function InputForm({ onSubmit, isLoading }: InputFormProps) {
-  const [age, setAge] = useState<string>('');
-  const [isFirstTimeVoter, setIsFirstTimeVoter] = useState<boolean>(true);
-  const [state, setState] = useState<string>('');
+export default function InputForm({ onSubmit, isLoading, initialData }: InputFormProps) {
+  const [age, setAge] = useState<string>(initialData?.age || '');
+  const [isFirstTimeVoter, setIsFirstTimeVoter] = useState<boolean>(initialData?.firstTime ?? true);
+  const [state, setState] = useState<string>(initialData?.state || '');
+
+  // Sync with initialData (from Firestore)
+  useEffect(() => {
+    if (initialData?.age) setAge(initialData.age);
+    if (initialData?.state) setState(initialData.state);
+    if (initialData?.firstTime !== undefined) setIsFirstTimeVoter(initialData.firstTime);
+  }, [initialData]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
