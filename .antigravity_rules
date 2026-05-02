@@ -1,0 +1,62 @@
+You are building a production-grade application called "ElectionIQ".
+
+Goal:
+Create a smart election assistant with strong logic, AI integration, and clean architecture.
+
+Rules:
+
+1. Always prioritize logic before AI.
+2. Use if/else conditions for eligibility and flow decisions.
+3. Use Vertex AI only for explanation, tips, and user-friendly responses.
+
+User Context:
+
+* Age
+* First-time voter
+* State
+
+Logic:
+
+* If age < 18:
+
+  * Mark "Not Eligible"
+  * Show educational info
+* Else:
+
+  * Generate full election journey
+
+Output Format (STRICT JSON):
+{
+"eligibility": "",
+"steps": [],
+"timeline": [],
+"tips": [],
+"explanation": ""
+}
+
+Code Guidelines:
+
+* Modular structure:
+  /components
+  /services
+  /utils
+  /ai
+* Clean naming conventions
+* Reusable functions
+
+Security:
+
+* Use .env for API keys
+* Validate inputs
+
+Performance:
+
+* Avoid unnecessary AI calls
+
+UI:
+
+* Simple, responsive, beginner-friendly
+
+Important:
+Do NOT build a chatbot-only system.
+Build a structured assistant with logic + AI.
