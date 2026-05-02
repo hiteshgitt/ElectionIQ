@@ -40,7 +40,7 @@ export default function DashboardPage() {
             setFormData(prev => ({ ...prev, ...parsed }));
           }
         }
-      } catch (_) {
+      } catch {
         // Silent error for dashboard fallback
       }
     }
@@ -135,8 +135,8 @@ export default function DashboardPage() {
                       // Also sync to localStorage
                       localStorage.setItem('electioniq_profile', JSON.stringify(formData));
                       setSubmitted(true);
-                    } catch (err) {
-                      console.error("Error saving profile:", err);
+                    } catch (_) {
+                      // Error handled silently for UI
                       alert("Sync failed! Check your connection or Firestore rules.");
                     } finally {
                       setIsSaving(false);
@@ -193,23 +193,25 @@ export default function DashboardPage() {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-1.5 text-gray-700">Phone Number</label>
+                      <label htmlFor="phone" className="block text-sm font-semibold text-gray-800 mb-1.5 text-gray-700">Phone Number</label>
                       <input
+                        id="phone"
                         type="tel" value={formData.phone}
                         onChange={e => setFormData(p => ({ ...p, phone: e.target.value }))}
                         placeholder="+91 XXXXX XXXXX"
-                        className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all text-sm"
+                        className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all text-sm text-gray-900 placeholder:text-gray-500"
                       />
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-1.5 text-gray-700">Residential Address</label>
+                    <label htmlFor="address" className="block text-sm font-semibold text-gray-800 mb-1.5 text-gray-700">Residential Address</label>
                     <textarea
+                      id="address"
                       required value={formData.address}
                       onChange={e => setFormData(p => ({ ...p, address: e.target.value }))}
                       placeholder="Full address for voter registration"
                       rows={3}
-                      className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all text-sm resize-none"
+                      className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all text-sm resize-none text-gray-900 placeholder:text-gray-500"
                     />
                   </div>
                   <button 
@@ -270,8 +272,8 @@ export default function DashboardPage() {
                   }, { merge: true });
                   
                   setDocSubmitted(true);
-                } catch (err) {
-                  console.error("Error uploading document:", err);
+                } catch {
+                  // Silent fail for document upload
                 } finally {
                   setIsUploading(false);
                 }

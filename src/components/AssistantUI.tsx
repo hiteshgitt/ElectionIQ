@@ -53,6 +53,16 @@ export default function AssistantUI({ data, profile }: AssistantUIProps) {
         <p className="text-gray-800 leading-relaxed text-lg font-medium">
           {data.explanation}
         </p>
+        <div className="p-4 bg-indigo-50/50 rounded-2xl border border-indigo-100 mt-6">
+          <h4 className="text-sm font-bold text-indigo-900 mb-2 flex items-center gap-2">
+            <Info className="w-4 h-4 text-blue-600" /> Why your vote matters
+          </h4>
+          <p className="text-xs text-indigo-800 leading-relaxed">
+            Voting is your fundamental right and power to shape the future of our democracy. 
+            By participating, you ensure that your voice is heard in the legislative process 
+            and contribute to the collective decision-making of the nation.
+          </p>
+        </div>
       </div>
 
       {/* Conditional Rendering for Eligible Users - Stepper UI */}

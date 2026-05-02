@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Vote, LogIn, LogOut, User, LayoutDashboard, Newspaper, X, Mail, Lock } from 'lucide-react';
 import { useSession, signIn, signOut } from 'next-auth/react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 
 export default function Header() {
@@ -45,13 +46,13 @@ export default function Header() {
           </Link>
 
           {/* Nav links */}
-          <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-gray-600">
-            <Link href="/" className="hover:text-indigo-600 transition-colors">Home</Link>
-            <Link href="/news" className="hover:text-indigo-600 transition-colors flex items-center gap-1">
+          <nav className="hidden md:flex items-center gap-6 text-sm font-bold text-gray-900">
+            <Link href="/" className="hover:text-indigo-800 transition-colors focus-visible:ring-2 focus-visible:ring-indigo-600 rounded-md outline-none px-1">Home</Link>
+            <Link href="/news" className="hover:text-indigo-800 transition-colors flex items-center gap-1 focus-visible:ring-2 focus-visible:ring-indigo-600 rounded-md outline-none px-1">
               <Newspaper className="w-4 h-4" /> News
             </Link>
             {session && (
-              <Link href="/dashboard" className="hover:text-indigo-600 transition-colors flex items-center gap-1">
+              <Link href="/dashboard" className="hover:text-indigo-800 transition-colors flex items-center gap-1 focus-visible:ring-2 focus-visible:ring-indigo-600 rounded-md outline-none px-1">
                 <LayoutDashboard className="w-4 h-4" /> Dashboard
               </Link>
             )}
@@ -148,7 +149,7 @@ export default function Header() {
               onClick={() => { signIn('google'); setShowAuthModal(false); }}
               className="w-full bg-white hover:bg-gray-50 border border-gray-200 text-gray-700 font-bold py-3 rounded-xl transition-all shadow-sm flex items-center justify-center gap-3"
             >
-              <img src="https://www.google.com/favicon.ico" alt="Google" className="w-5 h-5" />
+              <Image src="https://www.google.com/favicon.ico" alt="Google" width={20} height={20} className="w-5 h-5" />
               Continue with Google
             </button>
 

@@ -8,7 +8,7 @@ global.fetch = vi.fn(() =>
     ok: true,
     json: () => Promise.resolve({ success: true, data: { eligibility: "Eligible", explanation: "Mocked AI Response" } }),
   })
-) as any;
+) as unknown as typeof fetch;
 
 describe('InputForm Component', () => {
   beforeEach(() => {
