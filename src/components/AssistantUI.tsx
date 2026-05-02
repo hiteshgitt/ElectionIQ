@@ -7,11 +7,22 @@ import { CheckCircle, AlertTriangle, Lightbulb, Info, ArrowRight, ChevronLeft, C
 
 interface AssistantUIProps {
   data: AssistantResponse;
+  profile?: { age?: string, state?: string, firstTime?: boolean };
 }
 
-export default function AssistantUI({ data }: AssistantUIProps) {
+export default function AssistantUI({ data, profile }: AssistantUIProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const isEligible = !data.eligibility.toLowerCase().includes("not eligible");
+
+  // Dynamically update eligibility text based on profile if available
+  let eligibilityText = data.eligibility;
+  if (profile?.age && profile?.state) {
+    // If the text contains age/state patterns, try to update them
+    // Example: "As a 34-year-old citizen living in Maharashtra..."
+    eligibilityText = eligibilityText
+      .replace(/\d+-year-old/g, `${profile.age}-year-old`)
+      .replace(/living in [^,.]+/g, `living in ${profile.state}`);
+  }
 
   return (
     <div className="w-full space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
@@ -27,7 +38,7 @@ export default function AssistantUI({ data }: AssistantUIProps) {
               {isEligible ? "You're Eligible!" : "Not Yet Eligible"}
             </h2>
             <p className={`text-lg ${isEligible ? 'text-green-700' : 'text-orange-700'}`}>
-              {data.eligibility}
+              {eligibilityText}
             </p>
           </div>
         </div>

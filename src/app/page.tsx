@@ -5,7 +5,7 @@ import InputForm from '@/components/InputForm';
 import AssistantUI from '@/components/AssistantUI';
 import { UserContext } from '@/utils/eligibility';
 import { AssistantResponse } from '@/ai/vertex';
-import { ShieldCheck, Vote, RefreshCw, LogIn, Mail, Lock, Loader2 } from 'lucide-react';
+import { ShieldCheck, Vote, RefreshCw, LogIn, Mail, Lock, Loader2, User } from 'lucide-react';
 import { useSession, signIn } from 'next-auth/react';
 import Link from 'next/link';
 import { db } from '@/utils/firebase';
@@ -206,7 +206,7 @@ export default function Home() {
 
             {result && (
               <div className="md:col-span-8 w-full">
-                <AssistantUI data={result} />
+                <AssistantUI data={result} profile={userProfile || undefined} />
               </div>
             )}
           </div>
@@ -248,7 +248,7 @@ export default function Home() {
                     Clear Result
                   </button>
                 </div>
-                <AssistantUI data={result} />
+                <AssistantUI data={result} profile={userProfile || undefined} />
               </div>
             )}
           </div>

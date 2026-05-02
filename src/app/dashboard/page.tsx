@@ -177,6 +177,17 @@ export default function DashboardPage() {
                       />
                     </div>
                     <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-1.5 flex items-center gap-1.5">
+                        <Calendar className="w-4 h-4 text-indigo-400" /> Age
+                      </label>
+                      <input
+                        type="number" required value={formData.age}
+                        onChange={e => setFormData(p => ({ ...p, age: e.target.value }))}
+                        placeholder="e.g. 18"
+                        className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all text-sm"
+                      />
+                    </div>
+                    <div>
                       <label className="block text-sm font-semibold text-gray-700 mb-1.5 text-gray-700">Phone Number</label>
                       <input
                         type="tel" value={formData.phone}
