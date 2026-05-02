@@ -35,6 +35,25 @@ ElectionIQ is built as a showcase for the full Google Cloud and Firebase ecosyst
 | **Deployment** | **Google Cloud Run** | Serverless containerized deployment with auto-scaling and high availability. |
 | **CI/CD** | **Google Cloud Build** | Continuous Integration and Deployment pipeline directly from GitHub. |
 
+## 🛠️ Testing
+
+ElectionIQ uses **Vitest** for automated unit and component testing to ensure reliability and accessibility.
+
+### Running Tests
+To execute the test suite, run:
+```bash
+npm test
+```
+
+### Coverage
+- **Core Logic**: Validates the deterministic eligibility engine (`eligibility.ts`).
+- **Component Testing**: Verifies that the `InputForm` correctly captures user data and triggers submissions.
+- **Accessibility Verification**: Ensures labels and ARIA attributes are correctly applied to interactive elements.
+
+## 🚀 Deployment
+
+The app is optimized for **Google Cloud Run** using Next.js standalone mode.
+
 ---
 
 ## 🎯 Chosen Vertical
