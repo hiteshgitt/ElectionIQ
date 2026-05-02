@@ -1,15 +1,16 @@
 "use client";
 
-import React from 'react';
+import React, { useState } from 'react';
 import { AssistantResponse } from '@/ai/vertex';
 import Timeline from './Timeline';
-import { CheckCircle, AlertTriangle, Lightbulb, Info, ArrowRight } from 'lucide-react';
+import { CheckCircle, AlertTriangle, Lightbulb, Info, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface AssistantUIProps {
   data: AssistantResponse;
 }
 
 export default function AssistantUI({ data }: AssistantUIProps) {
+  const [currentStep, setCurrentStep] = useState(0);
   const isEligible = !data.eligibility.toLowerCase().includes("not eligible");
 
   return (
@@ -43,25 +44,47 @@ export default function AssistantUI({ data }: AssistantUIProps) {
         </p>
       </div>
 
-      {/* Conditional Rendering for Eligible Users */}
+      {/* Conditional Rendering for Eligible Users - Stepper UI */}
       {isEligible && data.steps && data.steps.length > 0 && (
         <div className="bg-white/90 backdrop-blur-md rounded-2xl shadow-lg p-6 border border-gray-100">
-          <h3 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-            <ArrowRight className="w-5 h-5 text-indigo-500" />
-            Your Action Plan
-          </h3>
-          <div className="grid gap-4 md:grid-cols-2">
-            {data.steps.map((step, index) => (
-              <div key={index} className="bg-gray-50 rounded-xl p-5 border border-gray-100 hover:border-indigo-200 transition-colors">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-8 h-8 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold text-sm">
-                    {index + 1}
-                  </div>
-                  <h4 className="text-lg font-bold text-gray-800">{step.title}</h4>
-                </div>
-                <p className="text-gray-600 ml-11">{step.description}</p>
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+              <ArrowRight className="w-5 h-5 text-indigo-500" />
+              Your Action Plan
+            </h3>
+            <span className="text-sm font-semibold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full">
+              Step {currentStep + 1} of {data.steps.length}
+            </span>
+          </div>
+          
+          <div className="bg-gray-50 rounded-xl p-8 border border-indigo-100 min-h-[200px] flex flex-col justify-center transition-all duration-300">
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 flex-shrink-0 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-xl shadow-md">
+                {currentStep + 1}
               </div>
-            ))}
+              <div>
+                <h4 className="text-2xl font-bold text-gray-800 mb-3">{data.steps[currentStep].title}</h4>
+                <p className="text-gray-600 text-lg leading-relaxed">{data.steps[currentStep].description}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex justify-between mt-6">
+            <button 
+              onClick={() => setCurrentStep(prev => Math.max(0, prev - 1))}
+              disabled={currentStep === 0}
+              className="flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-gray-100 text-gray-700"
+            >
+              <ChevronLeft className="w-5 h-5" /> Previous
+            </button>
+            
+            <button 
+              onClick={() => setCurrentStep(prev => Math.min(data.steps.length - 1, prev + 1))}
+              disabled={currentStep === data.steps.length - 1}
+              className="flex items-center gap-2 px-6 py-3 rounded-xl font-semibold transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed bg-indigo-600 hover:bg-indigo-700 text-white shadow-md hover:shadow-lg"
+            >
+              Next Step <ChevronRight className="w-5 h-5" />
+            </button>
           </div>
         </div>
       )}
