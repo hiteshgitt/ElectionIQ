@@ -9,10 +9,22 @@ export default function DashboardPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
 
-  const [formData, setFormData] = useState({ fullName: '', dob: '', state: '', address: '', phone: '' });
+  const [formData, setFormData] = useState({ fullName: '', dob: '', state: '', address: '', phone: '', age: '' });
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [submitted, setSubmitted] = useState(false);
+  const [docSubmitted, setDocSubmitted] = useState(false);
   const [activeTab, setActiveTab] = useState<'details' | 'documents'>('details');
+
+  // Load saved profile from localStorage (includes age+state from home page)
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('electioniq_profile');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        setFormData(prev => ({ ...prev, ...parsed }));
+      }
+    } catch (_) {}
+  }, []);
 
   if (status === 'loading') {
     return (
@@ -84,7 +96,7 @@ export default function DashboardPage() {
                 <p className="text-gray-500">Your voter profile has been updated successfully.</p>
               </div>
             ) : (
-              <form onSubmit={e => { e.preventDefault(); setSubmitted(true); }} className="space-y-5">
+              <form onSubmit={e => { e.preventDefault(); localStorage.setItem('electioniq_profile', JSON.stringify(formData)); setSubmitted(true); }} className="space-y-5">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-1.5 flex items-center gap-1.5">
@@ -175,7 +187,7 @@ export default function DashboardPage() {
             </div>
 
             <button
-              onClick={() => selectedFile && setSubmitted(true)}
+              onClick={() => selectedFile && setDocSubmitted(true)}
               disabled={!selectedFile}
               className="w-full bg-green-600 hover:bg-green-700 disabled:opacity-40 disabled:cursor-not-allowed text-white font-bold py-3 rounded-xl transition-all shadow-md"
             >
