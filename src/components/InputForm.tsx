@@ -4,12 +4,22 @@ import React, { useState, useEffect } from 'react';
 import { UserContext } from '@/utils/eligibility';
 import { Send, MapPin, Calendar, UserCheck } from 'lucide-react';
 
+/**
+ * Props for the InputForm component.
+ */
 interface InputFormProps {
+  /** Callback function triggered on form submission. */
   onSubmit: (data: UserContext) => void;
+  /** Whether the form is currently in a loading state. */
   isLoading: boolean;
+  /** Optional initial data to populate the form (e.g., from Firestore). */
   initialData?: { age?: string, state?: string, firstTime?: boolean };
 }
 
+/**
+ * A responsive form for collecting user voting information.
+ * Implements strict validation and high-contrast accessibility.
+ */
 export default function InputForm({ onSubmit, isLoading, initialData }: InputFormProps) {
   const [age, setAge] = useState<string>(initialData?.age || '');
   const [isFirstTimeVoter, setIsFirstTimeVoter] = useState<boolean>(initialData?.firstTime ?? true);

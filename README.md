@@ -57,6 +57,29 @@ npm test
 | `utils/validation.ts` | 92.85% | 87.5% | 100% | 100% |
 | `components/InputForm.tsx` | 77.27% | 70% | 75% | 89.47% |
 
+## 🏛️ Architecture
+
+ElectionIQ follows a **Clean Architecture** pattern, separating concerns into distinct layers:
+
+- **Presentation Layer**: React components styled with high-contrast CSS (Vanilla/Tailwind).
+- **Service Layer**: Handles interactions with Vertex AI and Firestore.
+- **Logic Layer**: A deterministic, rule-based engine (`eligibility.ts`) that validates user data before any AI processing.
+- **Data Layer**: Firebase/Firestore for persistence and NextAuth for secure session management.
+
+## 🛡️ Security Considerations
+
+- **Server-Side Validation**: All eligibility checks are mirrored on the server.
+- **Security Headers**: Implemented `X-Frame-Options`, `X-Content-Type-Options`, and `CSP` via `next.config.ts`.
+- **Environment Isolation**: Sensitive keys are managed via secure environment variables.
+- **Input Sanitization**: All user inputs are sanitized to prevent XSS.
+
+## ⚡ Performance Optimizations
+
+- **Static Generation**: Critical pages are pre-rendered for instant loading.
+- **Image Optimization**: Using `next/image` for automatic resizing and WebP conversion.
+- **Tree Shaking**: Minimized bundle size by using modular imports from `lucide-react` and other libraries.
+- **Edge Deployment**: Hosted on Cloud Run for low-latency global access.
+
 ## 🚀 Deployment
 
 The app is optimized for **Google Cloud Run** using Next.js standalone mode.

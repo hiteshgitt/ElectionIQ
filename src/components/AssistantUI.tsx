@@ -25,7 +25,11 @@ export default function AssistantUI({ data, profile }: AssistantUIProps) {
   }
 
   return (
-    <div className="w-full space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+    <div 
+      className="w-full space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700"
+      role="status"
+      aria-live="polite"
+    >
       
       {/* Eligibility Card */}
       <div className={`p-6 rounded-2xl shadow-lg border-2 relative overflow-hidden ${isEligible ? 'bg-green-50 border-green-300' : 'bg-orange-50 border-orange-300'}`}>
